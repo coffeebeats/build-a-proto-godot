@@ -1,0 +1,22 @@
+# Godot-specific ignores
+.godot/
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# MacOS-specific ignores
+.DS_Store
+
+# Godot source/editor files
+/.scons
+/godot
+Godot.app
+godot.app
+Godot.exe
+godot.exe
+
+# Testing-related ignores
+# ...
+
+# IDE-related files
+.vscode/*
