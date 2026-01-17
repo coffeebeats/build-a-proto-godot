@@ -16,7 +16,24 @@ defaults:
     shell: bash
 
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    outputs:
+      rust_version: ${{ steps.rust.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - uses: "coffeebeats/build-a-proto/.github/actions/parse-rust-version@v0.2.2"
+        id: rust
+        with:
+          manifest-path: Cargo.toml
+
   build:
+    needs: ["config"]
+
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -25,7 +42,7 @@ jobs:
 
       - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@v0.2.2"
         with:
-          manifest-path: Cargo.toml
+          version: ${{ needs.config.outputs.rust_version }}
           profile: minimal
 
       - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@v0.2.2"
@@ -34,6 +51,7 @@ jobs:
           profile: release
 
   format:
+    needs: ["config"]
     if: |
       inputs.has_source_change &&
       github.actor != 'dependabot[bot]'
@@ -54,7 +72,7 @@ jobs:
       - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@v0.2.2"
         id: setup-rust
         with:
-          manifest-path: generate/Cargo.toml
+          version: ${{ needs.config.outputs.rust_version }}
           profile: minimal
           components: rustfmt
 
@@ -85,7 +103,7 @@ jobs:
         run: exit 1
 
   lint:
-    needs: ["build", "format"]
+    needs: ["build", "config", "format"]
     if: inputs.has_source_change
 
     runs-on: ubuntu-latest
@@ -96,7 +114,7 @@ jobs:
 
       - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@v0.2.2"
         with:
-          manifest-path: generate/Cargo.toml
+          version: ${{ needs.config.outputs.rust_version }}
           profile: minimal
           components: clippy
 
@@ -116,7 +134,7 @@ jobs:
               --deny=warnings
 
   test:
-    needs: ["build"]
+    needs: ["build", "config"]
 
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -126,7 +144,7 @@ jobs:
 
       - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@v0.2.2"
         with:
-          manifest-path: generate/Cargo.toml
+          version: ${{ needs.config.outputs.rust_version }}
           profile: minimal
 
       - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@v0.2.2"
