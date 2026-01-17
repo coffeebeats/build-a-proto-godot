@@ -49,14 +49,14 @@ jobs:
     uses: "./.github/workflows/check-commit-godot.yml"
     secrets: inherit
     with:
-      has_source_change: ${{ needs.changes.outputs.has_gdscript_change }}
+      has_source_change: ${{ fromJson(needs.changes.outputs.has_gdscript_change) }}
 
   check-rust:
     needs: ["changes"]
     uses: "./.github/workflows/check-commit-rust.yml"
     secrets: inherit
     with:
-      has_source_change: ${{ needs.changes.outputs.has_rust_change }}
+      has_source_change: ${{ fromJson(needs.changes.outputs.has_rust_change) }}
 
   # Used to ensure all branch protection requirements are met. This is a workaround until
   # https://github.com/github-community/community/discussions/4324 is addressed.
