@@ -15,9 +15,6 @@ defaults:
   run:
     shell: bash
 
-env:
-  ACTIONS_BOT_TOKEN: ${{ secrets.GHA_TOKEN }}
-
 jobs:
   changes:
     runs-on: ubuntu-latest
