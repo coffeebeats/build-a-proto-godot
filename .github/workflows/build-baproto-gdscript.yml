@@ -77,6 +77,8 @@ jobs:
 
       - uses: "coffeebeats/build-a-proto/.github/actions/parse-rust-version@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
         id: rust
+        with:
+          manifest-path: generate/Cargo.toml
 
       - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
         with:
