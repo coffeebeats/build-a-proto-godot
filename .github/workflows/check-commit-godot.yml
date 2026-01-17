@@ -1,12 +1,12 @@
 name: "🔎 Check: Godot project"
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      has_source_change:
+        description: "Whether any GDScript source code changes need to be checked."
+        required: true
+        type: boolean
 
 permissions:
   contents: write
@@ -15,42 +15,10 @@ defaults:
   run:
     shell: bash
 
-env:
-  # NOTE: Switch to repository secret to have new commit run workflows.
-  ACTIONS_BOT_TOKEN: ${{ github.token }}
-
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    outputs:
-      has_change: "${{ steps.check-non-source.outputs.any_modified == 'true' || steps.check-source.outputs.any_modified == 'true' }}"
-      has_source_change: "${{ steps.check-source.outputs.any_modified == 'true' }}"
-
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        with:
-          fetch-depth: 0
-
-      - name: Check for any non-source code changes
-        id: check-non-source
-        uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891
-        with:
-          exclude_submodules: true
-          files_ignore: "**/*.gd"
-
-      - name: Check for any source code changes
-        id: check-source
-        uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891
-        with:
-          exclude_submodules: true
-          files: "**/*.gd"
-
   format-and-lint:
-    needs: ["changes"]
     if: |
-      needs.changes.outputs.has_source_change == 'true' &&
+      inputs.has_source_change &&
       github.actor != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
@@ -63,7 +31,8 @@ jobs:
           # later needed. See https://github.com/stefanzweifel/git-auto-commit-action
           # for more details.
           ref: ${{ github.head_ref }}
-          token: ${{ env.ACTIONS_BOT_TOKEN }}
+          # Use a PAT so that GitHub Actions will trigger on the resulting commit.
+          token: ${{ secrets.GHA_TOKEN }}
 
       - uses: coffeebeats/godot-infra/check-godot-project@v3
         with:
@@ -71,9 +40,6 @@ jobs:
           line-length-max: 88
 
   test:
-    needs: ["changes"]
-    if: needs.changes.outputs.has_change == 'true'
-
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -105,19 +71,3 @@ jobs:
           -gprefix=
           -gsuffix=_test.gd
           -gexit
-
-  # Used to ensure all branch protection requirements are met. This is a workaround until
-  # https://github.com/github-community/community/discussions/4324 is addressed.
-  branch_protection:
-    needs: ["format-and-lint", "test"]
-    if: ${{ always() }}
-
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-
-    steps:
-      - name: Verify status of dependencies
-        if: |
-          always() &&
-          (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
-        run: exit 1
