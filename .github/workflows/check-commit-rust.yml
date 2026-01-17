@@ -120,10 +120,8 @@ jobs:
           profile: minimal
           version: ${{ needs.config.outputs.rust_version }}
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
-        with:
-          manifest-path: generate/Cargo.toml
-          profile: release
+      # NOTE: 'cargo clippy' does not seem to use the 'cargo build' cache; as
+      # such, skip loading the build cache.
 
       - name: Lint 'rust' source
         run: |
