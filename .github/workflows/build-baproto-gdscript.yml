@@ -77,6 +77,8 @@ jobs:
 
       - uses: "coffeebeats/build-a-proto/.github/actions/parse-rust-version@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
         id: rust
+        with:
+          manifest-path: generate/Cargo.toml
 
       - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
         with:
@@ -95,8 +97,9 @@ jobs:
 
       - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
         with:
-          profile: release
+          manifest-path: generate/Cargo.toml
           platform: ${{ inputs.target }}
+          profile: release
           targets: bins
           use_cross: ${{ inputs.use_cross }}
 
@@ -104,9 +107,9 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           tar \
-          -C "target/${{ inputs.target }}/release" \
+          -C "generate/target/${{ inputs.target }}/release" \
           -czf ${{ inputs.archive-name }} \
-          "baproto"
+          "baproto-gdscript"
 
       - name: Archive executable (Windows)
         if: runner.os == 'Windows'
@@ -114,7 +117,7 @@ jobs:
           cat <<- EOM | python3 -c "$(</dev/stdin)"
           from zipfile import ZipFile
           with ZipFile("${{ inputs.archive-name }}", mode="w") as a:
-            a.write("target/${{ inputs.target }}/release/baproto.exe", arcname="baproto.exe")
+            a.write("generate/target/${{ inputs.target }}/release/baproto-gdscript.exe", arcname="baproto-gdscript.exe")
           EOM
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
