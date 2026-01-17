@@ -5,7 +5,6 @@ use baproto::{Generator, GeneratorError, GeneratorOutput, Schema};
 /* -------------------------------------------------------------------------- */
 
 /// A code generator that produces GDScript bindings from Build-A-Proto schemas.
-#[derive(Default)]
 pub struct GDScript;
 
 /* ----------------------------- Impl: Generator ---------------------------- */
