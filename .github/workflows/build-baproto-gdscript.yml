@@ -75,14 +75,11 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/parse-rust-version@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/parse-rust-version@6e29e59a84e33eeb2f76009506cda1415885437b"
         id: rust
-        with:
-          manifest-path: generate/Cargo.toml
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@6e29e59a84e33eeb2f76009506cda1415885437b"
         with:
-          manifest-path: generate/Cargo.toml
           profile: minimal
           targets: ${{ inputs.target }}
           version: ${{ steps.rust.outputs.version }}
@@ -95,9 +92,8 @@ jobs:
           echo "SDKROOT=$(xcrun -sdk macosx11.1 --show-sdk-path)" >> $GITHUB_ENV
           echo "MACOSX_DEPLOYMENT_TARGET=11.1" >> $GITHUB_ENV
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@6e29e59a84e33eeb2f76009506cda1415885437b"
         with:
-          manifest-path: generate/Cargo.toml
           platform: ${{ inputs.target }}
           profile: release
           targets: bins
@@ -107,7 +103,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           tar \
-          -C "generate/target/${{ inputs.target }}/release" \
+          -C "target/${{ inputs.target }}/release" \
           -czf ${{ inputs.archive-name }} \
           "baproto-gdscript"
 
@@ -117,7 +113,7 @@ jobs:
           cat <<- EOM | python3 -c "$(</dev/stdin)"
           from zipfile import ZipFile
           with ZipFile("${{ inputs.archive-name }}", mode="w") as a:
-            a.write("generate/target/${{ inputs.target }}/release/baproto-gdscript.exe", arcname="baproto-gdscript.exe")
+            a.write("target/${{ inputs.target }}/release/baproto-gdscript.exe", arcname="baproto-gdscript.exe")
           EOM
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
