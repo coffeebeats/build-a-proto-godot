@@ -98,6 +98,7 @@ jobs:
           profile: release
           targets: bins
           use_cross: ${{ inputs.use_cross }}
+          target-dir: .target
 
       - name: Archive executable (Default)
         if: runner.os != 'Windows'

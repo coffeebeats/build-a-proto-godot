@@ -46,6 +46,7 @@ jobs:
       - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         with:
           profile: release
+          target-dir: .target
 
   format:
     needs: ["config"]
@@ -142,6 +143,7 @@ jobs:
       - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         with:
           profile: release
+          target-dir: .target
 
       - name: Test source code
         run: |
