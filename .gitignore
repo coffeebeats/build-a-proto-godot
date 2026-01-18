@@ -1,3 +1,6 @@
+# IDE-related files
+.vscode/*
+
 # Godot-specific ignores
 .godot/
 
@@ -15,11 +18,22 @@ godot.app
 Godot.exe
 godot.exe
 
-# Rust application ignores
-# ...
+# Rust build artifact ignores
+debug/
+target/
+
+# Rustfmt ignores
+**/*.rs.bk
+
+# MSVC Windows builds of rustc generate these, which store debugging information
+*.pdb
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
 # Testing-related ignores
 # ...
-
-# IDE-related files
-.vscode/*
