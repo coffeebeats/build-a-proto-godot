@@ -23,7 +23,7 @@ updates:
 
   # Update binary application dependencies
   - package-ecosystem: "cargo"
-    directory: "/generate"
+    directory: "/"
     reviewers:
       - coffeebeats
     schedule:
