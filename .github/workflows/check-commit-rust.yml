@@ -26,10 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/parse-rust-version@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/parse-rust-version@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         id: rust
-        with:
-          manifest-path: generate/Cargo.toml
 
   build:
     needs: ["config"]
@@ -40,16 +38,15 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         with:
           version: ${{ needs.config.outputs.rust_version }}
-          manifest-path: generate/Cargo.toml
           profile: minimal
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         with:
-          manifest-path: generate/Cargo.toml
           profile: release
+          target-dir: .target
 
   format:
     needs: ["config"]
@@ -70,23 +67,20 @@ jobs:
           # Use a PAT so that GitHub Actions will trigger on the resulting commit.
           token: ${{ secrets.GHA_TOKEN }}
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         id: setup-rust
         with:
           components: rustfmt
-          manifest-path: generate/Cargo.toml
           profile: minimal
           version: ${{ needs.config.outputs.rust_version }}
 
       - name: Check Rust source formatting
         id: format
         continue-on-error: true
-        working-directory: generate
         run: cargo fmt --check
 
       - name: Fix formatting of source code
         if: steps.format.outcome == 'failure'
-        working-directory: generate
         run: |
           cargo fmt
 
@@ -113,10 +107,9 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         with:
           components: clippy
-          manifest-path: generate/Cargo.toml
           profile: minimal
           version: ${{ needs.config.outputs.rust_version }}
 
@@ -128,9 +121,7 @@ jobs:
           cargo clippy \
             --all-features \
             --all-targets \
-            --manifest-path=generate/Cargo.toml \
             --no-deps \
-            --target-dir=generate/target \
             --target=x86_64-unknown-linux-gnu \
             -- \
               --deny=warnings
@@ -144,16 +135,15 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/setup-rust@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         with:
-          manifest-path: generate/Cargo.toml
           profile: minimal
           version: ${{ needs.config.outputs.rust_version }}
 
-      - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@b9f774a6775879f4cdc2c55ee1b1e53d55587a5c"
+      - uses: "coffeebeats/build-a-proto/.github/actions/cargo-build@e194a2077f0617bd05004cc81ea5098ee2cb1cf7"
         with:
-          manifest-path: generate/Cargo.toml
           profile: release
+          target-dir: .target
 
       - name: Test source code
         run: |
@@ -161,7 +151,5 @@ jobs:
             --all-features \
             --all-targets \
             --frozen \
-            --manifest-path=generate/Cargo.toml \
             --profile=release \
-            --target-dir=generate/target \
             --target=x86_64-unknown-linux-gnu

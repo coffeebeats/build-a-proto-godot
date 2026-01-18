@@ -1,8 +1,12 @@
 # CLAUDE.md
 
+A Godot addon that provides an editor plugin which compiles `build-a-proto` schema files into GDScript.
+
+## Rust
+
 > `baproto-godot`: A wrapper binary which implements a GDScript code generator for IR compiled by the `build-a-proto` schema compiler.
 
-## Build & Test
+### Project commands
 
 ```bash
 cargo build          # Build
@@ -11,7 +15,7 @@ cargo clippy         # Lint
 cargo fmt --check    # Check formatting
 ```
 
-## Comment Headers
+### Comment Headers
 
 80-char delimited, centered text. Types: `Struct`, `Enum`, `Type`, `Trait`, `Fn`, `Impl`, `Mod`, `Macro`
 Type name is the "context" (e.g. function name, trait being impl'ed, function being tested, etc.)
@@ -26,7 +30,7 @@ mod subname;
 pub use subname::*;
 ```
 
-## Tests
+### Tests
 
 Inline with all actions described by Given/When/Then comments (full sentences, end with period):
 
@@ -53,7 +57,7 @@ mod tests {
 }
 ```
 
-## Patterns
+### Patterns
 
 - Doc comments: `` `Name` `` or `` [`Name`] `` for links
 - Doc comments (cont.): start doc comments with identifier:
